@@ -72,7 +72,19 @@ def minWindow(s: str, t: str) -> str:
         return minWindow
     
 def maxSlidingWindow(nums: list[int], k: int):
-    result = []
-    
-
-    return result
+    if k == 1:
+        return nums
+    output = []
+    deck = collections.deque()
+    deck.append(0)
+    i = 1
+    while i < len(nums):
+        if deck[0] < i-k+1:
+            deck.popleft()
+        while deck and nums[deck[-1]] < nums[i]:
+            deck.pop()
+        deck.append(i)
+        if i >= k-1:
+            output.append(nums[deck[0]])
+        i += 1
+    return output
