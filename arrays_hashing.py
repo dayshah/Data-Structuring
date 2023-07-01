@@ -63,5 +63,3 @@ def longestConsecutive(nums):
             current += 1
         longest = max(current, longest)
     return longest
-
-print(longestConsecutive([100,4,200,1,3,2]))
