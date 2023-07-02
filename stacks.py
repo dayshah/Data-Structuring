@@ -90,3 +90,21 @@ def carFleet(target: int, position: list[int], speed: list[int]):
             fleets += 1
     return fleets
 
+def largestRectangleHistogram(heights: list[int]):
+    maxArea = 0
+    stack = []
+    for i, h in enumerate(heights):
+        thisStart = i
+        while stack and h < stack[-1][1]:
+            start, lastH = stack.pop()
+            area = (i - start) * lastH
+            maxArea = max(area, maxArea)
+            thisStart = start
+        stack.append((thisStart, h))
+    
+    while stack:
+        start, lastH = stack.pop()
+        area = (len(heights) - start) * lastH
+        maxArea = max(area, maxArea)
+    
+    return maxArea
