@@ -15,4 +15,17 @@ class KthLargest:
             heapq.heappop(self.nums)
         return self.nums[0]
 
-        
+def lastStoneWeight(self, stones: list[int]):
+    stones = [-x for x in stones]
+    heapq.heapify(stones)
+    while (len(stones) > 1):
+        big = heapq.heappop(stones)
+        bigTwo = heapq.heappop(stones)
+        if big != bigTwo:
+            heapq.heappush(stones, big-bigTwo)
+    if stones:  
+        return -stones[0]
+    else:
+        return 0
+
+ 

@@ -59,6 +59,4 @@ def minEatingSpeed(piles: list[int], h: int):
             l = mid+1
     return result
 
-piles = [3,6,7,11]
-h = 8
-print(minEatingSpeed(piles, h))    
+
