@@ -77,5 +77,44 @@ def maxArea(grid: list[list[int]]):
                 maxArea = max(maxArea, dfs(i, j))
     return maxArea
 
-grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,0,1,1],[0,0,0,1,1]]
-print(maxArea(grid))
+def pacificAtlantic(heights: list[list[int]]):
+    visited = set()
+
+    def getNexts(r, c):
+        nexts = [(r+1, c), (r-1, c), (r, c+1), (r, c-1)]
+        result = []
+        for r2, c2 in nexts:
+            if (r2, c2) in visited:
+                continue
+            if r2 >= 0 and r2 < len(heights) and c2 >= 0 and c2 < len(heights[r]):
+                if heights[r2][c2] <= heights[r][c]:
+                    result.append((r2, c2))
+        return result
+    
+    def bfs(pacAtl, r, c):
+        deck = collections.deque()
+        deck.append((r,c))
+        visited.add((r,c))
+        while deck:
+            r, c = deck.popleft()
+            if r == 0 or c == 0:
+                pacAtl[0] = True
+            if r == len(heights)-1 or c == len(heights[r])-1:
+                pacAtl[1] = True
+            if pacAtl[0] and pacAtl[1]:
+                break
+            for next in getNexts(r, c):
+                visited.add(next)
+                deck.append(next)
+        return pacAtl
+
+    result = []
+    for r in range(len(heights)):
+        for c in range(len(heights[r])):
+            pacAtl = [False, False]
+            visited = set()
+            bfs(pacAtl, r, c)
+            if pacAtl[0] and pacAtl[1]:
+                result.append([r, c])
+    return result
+

@@ -28,4 +28,23 @@ def lastStoneWeight(self, stones: list[int]):
     else:
         return 0
 
- 
+def kClosest(points: list[list[int]], k: int):
+    distances = []
+    for x, y in points:
+        dist = (abs(x - 0) ** 2) + (abs(y - 0) ** 2)
+        distances.append([dist, x, y])
+    heapq.heapify(distances)
+    res = []
+    for i in range(k):
+        dist, x, y = heapq.heappop(distances)
+        res.append([x, y])
+    return res
+
+def kLargest(nums: list[int], k: int):
+    heap = [-x for x in nums]
+    heapq.heapify(heap)
+    res = nums[0]
+    for i in range(k):
+        res = -heapq.heappop(heap)
+    return res
+    
