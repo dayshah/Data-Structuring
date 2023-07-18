@@ -61,17 +61,47 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 
 def findRedundantConnection(edges: list[list[int]]):
     parents = {}
+    ranks = [1] * (len(edges) + 1)
     def findParent(x):
-        par = parents[x]
-        while par != parents[par]:
-            par = parents[par]
+        par = parents.get(x, x)
+        while par != parents.get(par, par):
+            par = parents.get(par, par)
         return par
     def union(x, y):
         parX = findParent(x)
         parY = findParent(y)
         if parX == parY:
             return False
+        if ranks[parX] > ranks[parY]:
+            parents[parY] = parX
+        else:
+            parents[parX] = parY
+        return True
 
     for x, y in edges:
         if not union(x, y):
             return [x,y]
+
+def countComponents(n: int, edges: list[list[int]]):
+    adjList = collections.defaultdict(list)
+    visited = set()
+    for x, y in edges:
+        adjList[x].append(y)
+        adjList[y].append(x)
+    
+    def dfs(x):
+        stack = [x]
+        while stack:
+            node = stack.pop()
+            for y in adjList[node]:
+                if y in visited:
+                    continue
+                visited.add(y)
+                stack.append(y)
+    
+    components = 0
+    for i in range(n):
+        if i not in visited:
+            dfs(i)
+            components += 1 
+    return components
