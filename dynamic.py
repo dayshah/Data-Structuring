@@ -78,3 +78,13 @@ def countPalindromes(s: str) -> int:
             r2 += 1
     return result
 
+import collections
+
+def coinChange(coins: list[int], amount: int):
+    dp = collections.defaultdict(lambda: float('inf'))
+    dp[0] = 0
+    for coin in coins:
+        for x in range(coin, amount+1):
+            dp[x] = min(dp[x], dp[x-coin]+1)
+    
+    return -1 if dp[amount] == float('inf') else dp[amount]
