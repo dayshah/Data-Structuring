@@ -86,3 +86,44 @@ def trappingWater(heights: list):
             maxL = max(heights[l], maxL)
     return trapped
 
+# find longest palindrome
+def longestPalindrome(s: str) -> str:
+    result = ""
+    maxLen = 0
+    for i in range(len(s)):
+        # expand from the center for each index
+        l = i
+        r = i
+        while l >= 0 and r < len(s) and s[l] == s[r]:
+            if (r-l) > maxLen:
+                result = s[l:r+1]
+                maxLen = r-l
+            l -= 1
+            r += 1
+        l2 = i
+        r2 = i+1
+        while l2 >= 0 and r2 < len(s) and s[l2] == s[r2]:
+            if (r2-l2) > maxLen:
+                result = s[l2:r2+1]
+                maxLen = r2-l2
+            l2 -= 1
+            r2 += 1
+    return result
+
+# basically doing the same thing as last problem
+def countPalindromes(s: str) -> int:
+    result = 0
+    for i in range(len(s)):
+        l = i
+        r = i
+        while l >= 0 and r < len(s) and s[l] == s[r]:
+            result += 1
+            l -= 1
+            r += 1
+        l2 = i
+        r2 = i+1
+        while l2 >= 0 and r2 < len(s) and s[l2] == s[r2]:
+            result += 1
+            l2 -= 1
+            r2 += 1
+    return result

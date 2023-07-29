@@ -1,5 +1,5 @@
 
-
+# how many ways to climb up a staircase with n steps
 def climbStairs(n: int) -> int:
     dp = {}
     dp[1] = 1
@@ -10,6 +10,7 @@ def climbStairs(n: int) -> int:
         i+=1
     return dp[n]
 
+# minimum cost to climb up staircase of len(cost) steps
 def minCostClimbingStairs(cost: list[int]) -> int:
     dp = {}
     dp[1] = cost[0]
@@ -20,6 +21,7 @@ def minCostClimbingStairs(cost: list[int]) -> int:
         i += 1
     return min(dp[i-1], dp[i-2])
 
+# most you can rob while not breaking into adjacent houses
 def rob(nums: list[int]) -> int:
     if len(nums) < 3:
         return max(nums)
@@ -33,53 +35,15 @@ def rob(nums: list[int]) -> int:
         i += 1
     return max(dp[i-1],dp[i-2])
 
+# same as previous but first and last houses are adjacent
 def rob2(nums: list[int]) -> int:
     if len(nums) < 3:
             return max(nums)
     return max(rob(nums[1:]), rob(nums[:-1]))
 
-def longestPalindrome(s: str) -> str:
-    result = ""
-    maxLen = 0
-    for i in range(len(s)):
-        l = i
-        r = i
-        while l >= 0 and r < len(s) and s[l] == s[r]:
-            if (r-l) > maxLen:
-                result = s[l:r+1]
-                maxLen = r-l
-            l -= 1
-            r += 1
-        l2 = i
-        r2 = i+1
-        while l2 >= 0 and r2 < len(s) and s[l2] == s[r2]:
-            if (r2-l2) > maxLen:
-                result = s[l2:r2+1]
-                maxLen = r2-l2
-            result += 1
-            l2 -= 1
-            r2 += 1
-    return result
-
-def countPalindromes(s: str) -> int:
-    result = 0
-    for i in range(len(s)):
-        l = i
-        r = i
-        while l >= 0 and r < len(s) and s[l] == s[r]:
-            result += 1
-            l -= 1
-            r += 1
-        l2 = i
-        r2 = i+1
-        while l2 >= 0 and r2 < len(s) and s[l2] == s[r2]:
-            result += 1
-            l2 -= 1
-            r2 += 1
-    return result
-
 import collections
 
+# number of ways you can create amount with the coins
 def coinChange(coins: list[int], amount: int):
     dp = collections.defaultdict(lambda: float('inf'))
     dp[0] = 0
