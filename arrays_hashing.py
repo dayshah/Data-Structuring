@@ -1,5 +1,6 @@
 import collections 
 
+# top k most frequent elements in nums
 def topKFrequent(nums, k):
     frequency_map = collections.Counter(nums)
     sorted_by_frequency = list(frequency_map.keys())
@@ -9,18 +10,22 @@ def topKFrequent(nums, k):
         result.append(sorted_by_frequency[i])
     return result
 
+# a list of products where products[i] is product of all except nums[i]
 def productExceptSelf(nums):
-    output = []
+    products = []
+    # prefix product of everything
     pre = 1
     for i in range(len(nums)):
-        output.append(pre)
+        products.append(pre)
         pre *= nums[i]
+    # postfix product of everything
     post = 1
     for i in range(len(nums)-1, -1, -1):
-        output[i] *= post
+        products[i] *= post
         post *= nums[i]
-    return output
+    return products
 
+# encode a list of strings
 def encode(strList):
     result = ""
     for word in strList:
@@ -29,7 +34,7 @@ def encode(strList):
         result += "#"
         result += word
     return result
-
+# decode that list of strings
 def decode(strToDecode):
     result = []
     i = 0
@@ -45,25 +50,28 @@ def decode(strToDecode):
         i += num
     return result
 
+# length of the longest sequence of consecutive elements that can be made from nums
 def longestConsecutive(nums):
     nums = set(nums)
     longest = 0
     while nums:
-        current = 1
+        currentLen = 1
         original_num = nums.pop()
+        # pick a random num and check if there's a sequence around it and get length of it
         num = original_num
         while num - 1 in nums:
             num -= 1
-            nums.pop(num)
-            current += 1
+            nums.remove(num)
+            currentLen += 1
         num = original_num
         while num + 1 in nums:
             num += 1
             nums.remove(num)
-            current += 1
-        longest = max(current, longest)
+            currentLen += 1
+        longest = max(currentLen, longest)
     return longest
 
+# number of possible subarrays that add up to k
 def subarraySum(nums: list[int], k: int):
     count = 0
     sum = 0
