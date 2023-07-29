@@ -63,3 +63,14 @@ def longestConsecutive(nums):
             current += 1
         longest = max(current, longest)
     return longest
+
+def subarraySum(nums: list[int], k: int):
+    count = 0
+    sum = 0
+    occurenceMap = collections.defaultdict(int)
+    occurenceMap[0] = 1
+    for num in nums:
+        sum += num
+        count += occurenceMap[sum-k]
+        occurenceMap[sum] += 1
+    return count
