@@ -43,7 +43,7 @@ def rob2(nums: list[int]) -> int:
 
 import collections
 
-# number of ways you can create amount with the coins
+# the fewest number of coins to make amount
 def coinChange(coins: list[int], amount: int):
     dp = collections.defaultdict(lambda: float('inf'))
     dp[0] = 0
@@ -52,3 +52,9 @@ def coinChange(coins: list[int], amount: int):
             dp[x] = min(dp[x], dp[x-coin]+1)
     
     return -1 if dp[amount] == float('inf') else dp[amount]
+
+def coinChangeWays(coins: list[int], amount: int):
+    dp = collections.defaultdict(lambda: 0)
+    dp[0] = 1
+    
+    
