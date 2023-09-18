@@ -47,4 +47,3 @@ def kLargest(nums: list[int], k: int):
     for i in range(k):
         res = -heapq.heappop(heap)
     return res
-    
