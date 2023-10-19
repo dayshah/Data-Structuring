@@ -1,6 +1,7 @@
 
 #include <iostream>
-#include <map>
+#include <unordered_set>
+#include <unordered_map>
 
 int longestNonDecreasing(const std::vector<int>& nums1, const std::vector<int>& nums2) {
     int dp1 = 1;
@@ -46,7 +47,7 @@ struct TreeNode {
 };
 
 int maxPathSum(TreeNode* root) {
-    int maxSum = -INFINITY;
+    int maxSum = INT_MIN;
     std::function<int(TreeNode*)> func;
     func = [&maxSum, &func](TreeNode* node){
         if (!node) return 0;
@@ -60,7 +61,54 @@ int maxPathSum(TreeNode* root) {
     return maxSum;
 }
 
+int lenLongestFibSubsequence(const std::vector<int>& arr) {
+    const int N = arr.size();
+    std::unordered_set<int> numSet(arr.begin(), arr.end());
+    std::unordered_map<int, std::unordered_map<int,int>> dp{};
+    dp.reserve(N);
+
+    int result = 0;
+    for (int i = 0; i < N; ++i) {
+        int big = arr[i];
+        dp.emplace(i, std::unordered_map<int,int>());
+        for (int j = 0; j < i; ++j) {
+            int num2 = arr[j];
+            int num1 = big - num2;
+            if (num1 < num2 && numSet.contains(num1)) {
+                if (dp[num1].contains(num2))
+                    dp[num2][big] = dp[num1][num2] + 1;
+                else
+                    dp[num2][big] = 3;
+                result = std::max(result, dp[num2][big]);
+            }
+        }
+    }
+    return result > 2 ? result : 0;
+}
+
+int minKnightMoves(int x, int y) {
+    std::unordered_map<int, std::unordered_map<int,int>> dp{};
+    std::function<int(int,int)> dfs;
+    dfs = [&dfs, &dp](int i, int j) {
+        if (dp.contains(i) && dp[i].contains(j)) 
+            return dp[i][j];
+        else if (i+j == 0)
+            return 0;
+        else if (i+j == 2)
+            return 2;
+        else {
+            if (!dp.contains(i)) dp[i] = std::unordered_map<int,int>();
+            dp[i][j] = std::min(
+                dfs(abs(i-1), abs(j-2)),
+                dfs(abs(i-2), abs(j-1))
+            ) + 1;
+            return dp[i][j];
+        }
+    };
+    return dfs(abs(x), abs(y));
+}
 
 int main() {
-    std::cout << goodBinaryStrings(3,3,1,1) << std::endl;
+    std::cout << minKnightMoves(2,1) << std::endl;
+    
 }
