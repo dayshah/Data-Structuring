@@ -97,7 +97,6 @@ int minKnightMoves(int x, int y) {
         else if (i+j == 2)
             return 2;
         else {
-            if (!dp.contains(i)) dp[i] = std::unordered_map<int,int>();
             dp[i][j] = std::min(
                 dfs(abs(i-1), abs(j-2)),
                 dfs(abs(i-2), abs(j-1))
@@ -108,7 +107,49 @@ int minKnightMoves(int x, int y) {
     return dfs(abs(x), abs(y));
 }
 
+int deleteAndEarn(std::vector<int>& nums) {
+    std::unordered_map<int, int> points{};
+    int maxNum = 0;
+    for (int num : nums) {
+        points[num] += num;
+        maxNum = std::max(num, maxNum);
+    }
+    std::unordered_map<int,int> dp{};
+    std::function<int(int)> maxPoints;
+    maxPoints = [&dp, &points, &maxPoints] (int num) {
+        if (dp.contains(num)) return dp[num];
+        else if (num == 0) return 0;
+        else if (num == 1) return points[1];
+        else {
+            dp[num] = std::max(
+                maxPoints(num-1),
+                maxPoints(num-2) + points[num]
+            );
+            return dp[num];
+        }
+    };
+    return maxPoints(maxNum);
+}
+
+double knightProbability(int n, int k, int row, int column) {
+    return -1;
+}
+
+int subarraysDivByK(std::vector<int>& nums, int k) {
+    int result = 0;
+    int prefixMod = 0;
+    std::unordered_map<int, int> modGroups{};
+    modGroups[0] = 1;
+    for (int num : nums) {
+        prefixMod += (num % k + k);
+        prefixMod %= k;
+        result += modGroups[prefixMod];
+        ++modGroups[prefixMod];
+    }
+    return result;
+}
+
 int main() {
     std::cout << minKnightMoves(2,1) << std::endl;
-    
+    std::cout << 3%5 << std::endl;
 }
