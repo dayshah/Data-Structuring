@@ -60,7 +60,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
     return ordering
 
 
-#union find
+# union find
 def findRedundantConnection(edges: list[list[int]]):
     parents = {}
     ranks = [1] * (len(edges) + 1)
