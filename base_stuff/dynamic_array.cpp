@@ -15,7 +15,7 @@ class DynamicArray {
 
     ~DynamicArray() { delete[] arr; }
 
-    DynamicArray(const DynamicArray& other) : 
+    DynamicArray(const DynamicArray& other) :
         arr(new int[other.capacity]), 
         capacity(other.capacity),
         size(other.size)
@@ -29,6 +29,26 @@ class DynamicArray {
             this->size = size;
             this->arr = new int[size];
             std::copy(other.arr, other.arr+other.size, this->arr);
+        }
+        return *this;
+    }
+
+    DynamicArray(DynamicArray&& other) noexcept :
+        arr(new int[capacity]), // not sure if this is right
+        capacity(other.capacity),
+        size(other.size)
+    {
+        std::move(other.arr, other.arr+other.size, arr);
+        std::swap(arr, other.arr);
+        capacity = other.capacity;
+        size = other.size;
+    }
+
+    DynamicArray& operator=(DynamicArray&& other) {
+        if (this != &other) {
+            std::move(other.arr, other.arr+other.size, arr);
+            capacity = other.capacity;
+            size = other.size;
         }
         return *this;
     }
