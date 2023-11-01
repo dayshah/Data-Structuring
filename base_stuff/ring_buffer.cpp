@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <queue>
+#include <thread>
 
 template<size_t capacity>
 struct RingBuffer {
@@ -8,9 +9,10 @@ struct RingBuffer {
     std::array<int, capacity> array;
     int head;
     int size;
-    std::mutex mutex;
+    std::mutex array_mutex;
     
     bool enQueue(int value) {
+        std::lock_guard<std::mutex> lock(array_mutex);
         if (isFull()) return false;
         array[(head+size)%capacity] = value;
         ++size;
@@ -39,6 +41,8 @@ struct RingBuffer {
     bool isFull() { return size == capacity; }
 };
 
+void testFunc(int n) {std::cout << n << "\n";};
+
 int main() {
     RingBuffer<3> rb;
     std::cout << rb.enQueue(1); // return True
@@ -50,4 +54,12 @@ int main() {
     std::cout << rb.deQueue();  // return True
     std::cout << rb.enQueue(4); // return True
     std::cout << rb.Rear();     // return 4
+    std::thread t1(testFunc, 100);
+    std::thread t3(&RingBuffer<3>::deQueue, &rb);
+    std::thread t2(&RingBuffer<3>::enQueue, &rb, 2);
+    t1.join();
+    t3.join();
+    t2.join();
+    
+    std::cout << rb.Rear();
 }
