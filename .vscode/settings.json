@@ -68,6 +68,8 @@
         "concepts": "cpp",
         "algorithm": "cpp",
         "queue": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "span": "cpp",
+        "ranges": "cpp"
     }
 }
