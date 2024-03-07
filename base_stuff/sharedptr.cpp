@@ -99,7 +99,7 @@ struct StinkyIsBad {
 };
 
 int main() {
-    SharedPtr<StinkyIsBad> stinky1{{1, 2}};
+    SharedPtr<StinkyIsBad> stinky1 = SharedPtr<StinkyIsBad>{{1, 2}};
     {
         SharedPtr<StinkyIsBad> stinky2{{2,1}};
         stinky1 = stinky2;
