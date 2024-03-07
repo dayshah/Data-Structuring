@@ -1,5 +1,4 @@
 
-#include <functional>
 #include <iostream>
 #include <list>
 #include <ostream>
@@ -36,7 +35,7 @@ class OrderedDictionary {
     const V& get_back_value() const {
         return list.back().second;
     }
-    const V& get_value_for_key(const K& key) const {
+    const V& operator[](const K& key) const {
         return map.at(key)->second;
     }
     void printSizes() {
@@ -46,11 +45,12 @@ class OrderedDictionary {
 };
 
 int main() {
+    std::optional<OrderedDictionary<int, int>> hello{};
     OrderedDictionary<int, std::string> test{};
     test.push_back({1, "hi"});
     test.printSizes();
     std::cout << "\n" << test.get_back_value() << "\n";
-    std::cout << test.get_value_for_key(1) << "\n\n";
+    std::cout << test[1] << "\n\n";
     test.remove_key(1);
     test.printSizes();
     return 0;
