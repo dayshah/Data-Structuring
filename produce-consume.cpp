@@ -54,31 +54,30 @@ class SharedBuffer {
     private:
     CircularQueue<std::string, MaxSize> queue;
     std::mutex qMutex;
-    std::condition_variable cvToAdd;
-    std::condition_variable cvToGet;
+    std::condition_variable cv;
 
     public:
-    SharedBuffer(): queue{}, qMutex{}, cvToAdd{}, cvToGet{} {}
+    SharedBuffer(): queue{}, qMutex{}, cv{} {}
 
     void addString(std::string&& word) {
         std::unique_lock<std::mutex> locker{qMutex};
-        cvToAdd.wait(locker, [this]() { return queue.getSize() < MaxSize; });
+        cv.wait(locker, [this]() { return queue.getSize() < MaxSize; });
 
-        std::cout << "Produced: " << word << std::endl;
+        std::cout << word << std::endl;
         queue.push_back(std::move(word));
 
+        cv.notify_one();
         locker.unlock();
-        cvToGet.notify_one();
     }
 
     void getString() {
         std::unique_lock<std::mutex> locker{qMutex};
-        cvToGet.wait(locker, [this]() { return queue.getSize() > 0; });
+        cv.wait(locker, [this]() { return queue.getSize() > 0; });
 
         std::cout << "*" << queue.pop_front() << "*" << std::endl;
 
+        cv.notify_one();
         locker.unlock();
-        cvToAdd.notify_one();
     }
 };
 
@@ -102,7 +101,7 @@ struct Consumer {
 
 int main() {
     std::vector<std::string> words{};
-    constexpr int NUM_OF_WORDS = 100;
+    constexpr int NUM_OF_WORDS = 1000;
     for (int i = 0; i < NUM_OF_WORDS; ++i) {
         words.push_back("hello" + std::to_string(i));
     }
