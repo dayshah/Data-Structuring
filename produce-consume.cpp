@@ -6,15 +6,6 @@
 #include <condition_variable>
 #include <functional>
 
-// You have a consumer and producer. 
-// The producer produce strings, then adds them to a shared buffer.
-// The consumer takes these strings out of the shared buffer, and prints them with '*' characters surrounding them.
-// The producer and consumer must run on different threads. Shared buffer access must be synchronized to avoid data races.
-// The queue should have a max length. 
-// The producer should wait until there is an available spot in the queue before adding anything to the shared structure. 
-// The consumer should wait until there is at least 1 string in the queue before doing anything. 
-// Model this problem in C++ using classes and std lib primitives.
-
 template <typename T, size_t MaxSize>
 class CircularQueue {
     private:
