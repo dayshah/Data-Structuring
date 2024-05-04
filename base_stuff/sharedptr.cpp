@@ -1,6 +1,8 @@
 #include <iostream>
 #include <ostream>
 
+struct InPlaceConstruct{};
+
 template <typename T>
 class SharedPtr {
     private:
@@ -17,9 +19,10 @@ class SharedPtr {
         : object_ptr(new T(std::move(object))), count_ptr(new int(1))
     { }
 
-    // SharedPtr(Args&&... args):
-    //     T(std::forward<Args>(args)...)
-    // { std::cout << "in place constructing" << std::endl; }
+    template<typename... Args>
+    SharedPtr(InPlaceConstruct, Args&&... args):
+        object_ptr(new T(std::forward<Args>(args)...)), count_ptr(new int(1))
+    { std::cout << "in place constructing" << std::endl; }
 
     // Rule of 5
     SharedPtr(const SharedPtr& other) noexcept
@@ -42,17 +45,17 @@ class SharedPtr {
         }
         return *this;
     }
-    // SharedPtr(SharedPtr&& other) noexcept
-    //     : object_ptr(other.object_ptr), count_ptr(other.count_ptr) {}
-    // SharedPtr& operator=(SharedPtr&& other)
-    // {
-    //     if (this != &other) {
-    //         object_ptr = other.object_ptr;
-    //         count_ptr = other.count_ptr;
-    //         (*count_ptr) += 1;
-    //     }
-    //     return *this;
-    // }
+    SharedPtr(SharedPtr&& other) noexcept
+        : object_ptr(other.object_ptr), count_ptr(other.count_ptr) {}
+    SharedPtr& operator=(SharedPtr&& other)
+    {
+        if (this != &other) {
+            object_ptr = other.object_ptr;
+            count_ptr = other.count_ptr;
+            (*count_ptr) += 1;
+        }
+        return *this;
+    }
     ~SharedPtr()
     {
         --(*count_ptr);
@@ -90,6 +93,7 @@ struct StinkyIsBad {
     int howGood;
     StinkyIsBad(int howBad, int howGood) {
         this->howBad = howBad;
+        this->howGood = howGood;
     }
     void increaseBad() { ++howBad; }
     friend std::ostream& operator<<(std::ostream& os, const StinkyIsBad& obj) {
@@ -99,7 +103,7 @@ struct StinkyIsBad {
 };
 
 int main() {
-    SharedPtr<StinkyIsBad> stinky1 = SharedPtr<StinkyIsBad>{{1, 2}};
+    SharedPtr<StinkyIsBad> stinky1 = SharedPtr<StinkyIsBad>{InPlaceConstruct{}, 1, 2};
     {
         SharedPtr<StinkyIsBad> stinky2{{2,1}};
         stinky1 = stinky2;

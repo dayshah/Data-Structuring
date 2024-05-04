@@ -35,7 +35,7 @@ struct LFUCache {
         updateInsert(key, cache[key].second);
         return cache[key].second;
     }
-    
+
     void put(int key, int value) {
         if (cache.contains(key)) {
             updateInsert(key, value);
@@ -48,7 +48,6 @@ struct LFUCache {
             insert(key, 1, value);
         }
     }
-
 };
 
 int main() {
