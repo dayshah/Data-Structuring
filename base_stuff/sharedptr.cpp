@@ -7,7 +7,7 @@ template <typename T>
 class SharedPtr {
     private:
     T* object_ptr;
-    int* count_ptr;
+    std::atomic<int> counter;
 
     public:
     // Create from T
