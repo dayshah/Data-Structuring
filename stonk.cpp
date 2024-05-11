@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <span>
+#include <vector>
+#include <climits>
 
 // buy on a day and sell on another day in future
 int maxProfit(const std::vector<int>& prices) {

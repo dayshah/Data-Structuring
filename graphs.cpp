@@ -1,6 +1,8 @@
 #include <iostream>
 #include <deque>
 #include <unordered_set>
+#include <vector>
+#include <unordered_map>
 
 using namespace std;
 

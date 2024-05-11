@@ -2,6 +2,10 @@
 #include <iostream>
 #include <unordered_set>
 #include <unordered_map>
+#include <math.h>
+#include <vector>
+#include <climits>
+#include <functional>
 
 int longestNonDecreasing(const std::vector<int>& nums1, const std::vector<int>& nums2) {
     int dp1 = 1;
@@ -24,7 +28,7 @@ int longestNonDecreasing(const std::vector<int>& nums1, const std::vector<int>& 
 }
 
 int goodBinaryStrings(int minLength, int maxLength, int oneGroup, int zeroGroup) {
-    int mod = (int)std::powf(10,9) + 7;
+    int mod = (int)std::pow(10,9) + 7;
     int dp[maxLength];
     dp[0] = 1;
     int res = 0;
