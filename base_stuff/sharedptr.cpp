@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ostream>
+#include <atomic>
 
 struct InPlaceConstruct{};
 
@@ -7,67 +8,69 @@ template <typename T>
 class SharedPtr {
     private:
     T* object_ptr;
-    std::atomic<int> counter;
-
-    public:
-    // Create from T
-    SharedPtr(const T& object)
-        : object_ptr(new T(object)), count_ptr(new int(1))
-    { }
-
-    SharedPtr(T&& object) noexcept
-        : object_ptr(new T(std::move(object))), count_ptr(new int(1))
-    { }
-
-    template<typename... Args>
-    SharedPtr(InPlaceConstruct, Args&&... args):
-        object_ptr(new T(std::forward<Args>(args)...)), count_ptr(new int(1))
-    { std::cout << "in place constructing" << std::endl; }
-
-    // Rule of 5
-    SharedPtr(const SharedPtr& other) noexcept
-        : object_ptr(other.object_ptr), count_ptr(other.count_ptr)
-    {
-        ++(*count_ptr);
-    }
-    SharedPtr& operator=(const SharedPtr& other) noexcept
-    {
-        if (this != &other) {
-            --(*count_ptr);
-            if (*count_ptr == 0 ) {
-                delete object_ptr;
-                delete count_ptr;
-                std::cout << "destroying underlying" << std::endl;
-            }
-            object_ptr = other.object_ptr;
-            count_ptr = other.count_ptr;
-            ++(*count_ptr);
-        }
-        return *this;
-    }
-    SharedPtr(SharedPtr&& other) noexcept
-        : object_ptr(other.object_ptr), count_ptr(other.count_ptr) {}
-    SharedPtr& operator=(SharedPtr&& other)
-    {
-        if (this != &other) {
-            object_ptr = other.object_ptr;
-            count_ptr = other.count_ptr;
-            (*count_ptr) += 1;
-        }
-        return *this;
-    }
-    ~SharedPtr()
-    {
-        --(*count_ptr);
-        if (*count_ptr == 0) { 
+    std::atomic<int>* counter;
+    void cleanup() {
+        if (counter && counter->fetch_sub(1, std::memory_order_acq_rel) - 1 == 0) { 
             delete object_ptr;
-            delete count_ptr;
+            delete counter;
             std::cout << "destroying underlying" << std::endl;
         }
     }
+    public:
+    // Create from T
+    SharedPtr(const T& object)
+        : object_ptr(new T(object)), counter{new std::atomic<int>{1}}
+    {}
+
+    SharedPtr(T&& object) noexcept
+        : object_ptr(new T(std::move(object))), counter{new std::atomic<int>{1}}
+    {}
+
+    template<typename... Args>
+    SharedPtr(InPlaceConstruct, Args&&... args)
+        : object_ptr(new T(std::forward<Args>(args)...)), counter{new std::atomic<int>{1}}
+    {}
+
+    // Rule of 5
+    SharedPtr(const SharedPtr& other) noexcept
+        : object_ptr(other.object_ptr),
+        counter(other.counter)
+    {
+        counter->fetch_add(1, std::memory_order_relaxed);
+    }
+    SharedPtr& operator=(const SharedPtr& other) noexcept {
+        if (this != &other) {
+            cleanup();
+            object_ptr = other.object_ptr;
+            counter = other.counter;
+            counter->fetch_add(1, std::memory_order_relaxed);
+        }
+        return *this;
+    }
+
+    SharedPtr(SharedPtr&& other) noexcept
+        : object_ptr(other.object_ptr), counter(other.counter) 
+    {
+        other.object_ptr = nullptr;
+        other.counter = nullptr;
+    }
+    SharedPtr& operator=(SharedPtr&& other) noexcept {
+        if (this != &other) {
+            cleanup();
+            object_ptr = other.object_ptr;
+            counter = other.counter;
+            other.object_ptr = nullptr;
+            other.counter = nullptr;
+        }
+        return *this;
+    }
+
+    ~SharedPtr() {
+        cleanup();
+    }
 
     int getCount() const {
-        return *count_ptr;
+        return counter->load();
     }
     operator bool() const {
         return object_ptr != nullptr;
@@ -108,8 +111,9 @@ int main() {
         SharedPtr<StinkyIsBad> stinky2{{2,1}};
         stinky1 = stinky2;
         stinky2 = stinky2;
-        std::cout << stinky2->howBad << std::endl;
+        std::cout << stinky2.getCount() << std::endl;
     }
+    std::cout << stinky1.getCount() << '\n';
     SharedPtr<StinkyIsBad> stinky3 = stinky1;
     stinky1->increaseBad();
     //std::cout << stinky1->howBad << std::endl;
