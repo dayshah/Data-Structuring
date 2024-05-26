@@ -6,7 +6,10 @@
 #include <condition_variable>
 #include <functional>
 
-template <typename T, size_t MaxSize>
+template<size_t Size>
+concept SizeMoreThanZero = Size > 0;
+
+template <typename T, size_t MaxSize> requires SizeMoreThanZero<MaxSize>
 class CircularQueue {
     private:
     std::array<T, MaxSize> queue;
@@ -20,6 +23,7 @@ class CircularQueue {
     }
 
     public:
+    static_assert(MaxSize > 0);
     CircularQueue(): queue{}, start{0}, size{0} {};
 
     size_t getSize() { return size; }
@@ -97,7 +101,7 @@ int main() {
         words.push_back("hello" + std::to_string(i));
     }
 
-    constexpr int BUFFER_SIZE = 10;
+    constexpr int BUFFER_SIZE = 0;
     SharedBuffer<BUFFER_SIZE> buffer{};
 
     std::jthread producerThread{Producer<BUFFER_SIZE>{}, std::ref(buffer), std::ref(words)};

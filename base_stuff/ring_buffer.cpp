@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <thread>
+#include <array>
 
 template<size_t capacity>
 struct RingBuffer {
@@ -55,8 +56,8 @@ int main() {
     std::cout << rb.enQueue(4); // return True
     std::cout << rb.Rear();     // return 4
     std::thread t1(testFunc, 100);
-    std::thread t3(&RingBuffer<3>::deQueue, &rb);
-    std::thread t2(&RingBuffer<3>::enQueue, &rb, 2);
+    std::thread t3(&RingBuffer<3>::deQueue, std::ref(rb));
+    std::thread t2(&RingBuffer<3>::enQueue, std::ref(rb), 2);
     t1.join();
     t3.join();
     t2.join();
